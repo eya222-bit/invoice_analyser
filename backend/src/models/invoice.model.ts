@@ -51,11 +51,7 @@ Invoice.init(
             allowNull: true
         },
 
-        raw_text: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
-
+        
         status: {
             type: DataTypes.STRING,
             allowNull: false,
