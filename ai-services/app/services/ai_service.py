@@ -1,6 +1,10 @@
+import os
 import requests
 import json
 import re
+
+
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
 
 
 def clean_json_response(response_text: str):
@@ -55,7 +59,7 @@ Extract the following information:
 
 IMPORTANT RULES:
 
-1. total_amount MUST be a number only.
+1. total_amount MUST be a number only as you find it with no modification of value.
    Example: 174.00 or 174
    NOT: "174.00 €"
    NOT: "174 EUR"
@@ -104,12 +108,13 @@ Invoice text:
 """
 
     response = requests.post(
-        "http://localhost:11434/api/generate",
+        f"{OLLAMA_BASE_URL}/api/generate",
         json={
             "model": "qwen2.5:3b",
             "prompt": prompt,
             "stream": False
-        }
+        },
+        timeout=120
     )
 
     response.raise_for_status()

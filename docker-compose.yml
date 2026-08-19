@@ -1,0 +1,111 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: invoice-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: AdAs@1234
+      MYSQL_DATABASE: invoice_analyse
+      MYSQL_USER: invoice_user
+      MYSQL_PASSWORD: AdAs@1234
+
+    
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - invoice-networks
+
+
+  ai-service:
+    build:
+      context: ./ai-services
+      dockerfile: Dockerfile
+
+    container_name: invoice-ai
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - ./ai-services/.env
+
+    environment:
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    volumes:
+      - ./ai-services/uploads:/app/uploads
+
+    networks:
+      - invoice-networks
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: invoice-backend
+    restart: unless-stopped
+
+    ports:
+      - "3002:3000"
+
+    env_file:
+      - ./backend/.env
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: invoice_analyse
+      DB_USER: root
+      DB_PASSWORD: AdAs@1234
+      AI_SERVICE_URL: http://ai-service:8000
+      AI_API_KEY: MY_SECRET_KEY
+      PORT: 3000
+
+    depends_on:
+      - mysql
+      - ai-service
+
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+    networks:
+      - invoice-networks
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3002
+
+    container_name: invoice-frontend
+    restart: unless-stopped
+
+    ports:
+      - "3003:3000"
+
+    depends_on:
+      - backend
+
+    networks:
+      - invoice-networks
+
+
+volumes:
+  mysql_data:
+
+
+networks:
+  invoice-networks:
+    driver: bridge

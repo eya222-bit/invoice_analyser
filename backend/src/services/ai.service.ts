@@ -3,7 +3,7 @@ import FormData from "form-data";
 import fs from "fs";
 
 const AI_SERVICE_URL =
-    process.env.AI_SERVICE_URL || "http://localhost:8000";
+    process.env.AI_SERVICE_URL || "http://ai-service:8000";
 
 export async function analyzeInvoice(filePath: string) {
     const formData = new FormData();

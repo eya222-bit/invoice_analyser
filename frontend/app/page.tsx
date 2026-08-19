@@ -36,7 +36,9 @@ interface DateExpense {
   total: number;
 }
 
-const API_URL = "http://localhost:3000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:3002";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -238,7 +240,7 @@ export default function Home() {
                 </p>
 
                 <p className="mt-1 text-xs text-slate-500">
-                  Format accepté : PDF
+                  Format accepté : PDF,png,jpg,jpeg.
                 </p>
               </div>
 
@@ -583,7 +585,7 @@ export default function Home() {
                 <p className="mt-1 font-bold text-slate-800">
                   {formatAmount(
                     invoice.total_amount,
-                    invoice.currency || "TND"
+                    invoice.currency || "EUR"
                   )}
                 </p>
               </div>
@@ -731,7 +733,7 @@ export default function Home() {
                       <td className="px-4 py-4 font-semibold text-slate-800">
                         {formatAmount(
                           item.total_amount,
-                          item.currency || "TND"
+                          item.currency || "EUR"
                         )}
                       </td>
 

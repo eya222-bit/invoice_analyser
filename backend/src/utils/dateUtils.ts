@@ -46,7 +46,7 @@ export function normalizeDate(date: string | null): string | null {
 
     août: "08",
     aout: "08",
-    août: "08",
+    
     aug: "08",
 
     septembre: "09",
